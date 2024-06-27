@@ -1,6 +1,6 @@
-const fs = require('fs');
+import { readdir } from 'fs';
 
-fs.readdir("Images", (err, files) => {
+readdir("./Images", (err, files) => {
   if (err) {
     return console.log('Unable to scan directory: ' + err);
   }
