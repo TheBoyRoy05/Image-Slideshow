@@ -5,7 +5,7 @@ const maxAngle = 20;
 const maxImages = 50;
 
 // Time intervals (milliseconds)
-const imageInterval = 1000;
+const imageInterval = 2500;
 const animationInterval = 500;
 
 fetch("output.json")
@@ -23,41 +23,43 @@ const createImage = (path, id) => {
   image.id = "Image-" + id;
 
   // Resize image
-  if (image.height > maxHeight){
-    image.width = image.width * maxHeight / image.height;
-    image.height = maxHeight;
-  }
-  if (image.width > maxWidth) {
-    image.height = image.height * maxWidth / image.width;
-    image.width = maxWidth;
-  }
+  image.onload = () => {
+    if (image.height > maxHeight){
+      image.width = image.width * maxHeight / image.height;
+      image.height = maxHeight;
+    }
+    if (image.width > maxWidth) {
+      image.height = image.height * maxWidth / image.width;
+      image.width = maxWidth;
+    }
 
-  // Set intial and random final position
-  const finalTopPosition = Math.floor(Math.random() * (window.innerHeight - image.height)) + 'px';
-  const finalLeftPosition = Math.floor(Math.random() * (window.innerWidth - image.width)) + 'px';
-  image.style.position = 'absolute';
-  image.style.top = '-500px';
-  image.style.left = (window.innerWidth - image.width) / 2;
+    // Set initial and random final position
+    const finalTopPosition = Math.floor(Math.random() * (window.innerHeight - image.height)) + 'px';
+    const finalLeftPosition = Math.floor(Math.random() * (window.innerWidth - image.width)) + 'px';
+    image.style.position = 'absolute';
+    image.style.top = '-500px';
+    image.style.left = (window.innerWidth - image.width) / 2 + 'px';
   
-  // Set random rotation
-  const initialRotation = Math.floor(Math.random() * maxAngle) - maxAngle / 2;
-  const finalRotation = Math.floor(Math.random() * maxAngle) - maxAngle / 2;
-  image.style.transform = `rotate(${initialRotation}deg) scale(2)`; // Starts off with double the size
+    // Set random rotation
+    const initialRotation = Math.floor(Math.random() * maxAngle) - maxAngle / 2;
+    const finalRotation = Math.floor(Math.random() * maxAngle) - maxAngle / 2;
+    image.style.transform = `rotate(${initialRotation}deg) scale(2)`; // Starts off with double the size
 
-  // Set initial opacity and transition for fade-in effect
-  image.style.opacity = 0;
-  image.style.transition = 'top 1s, opacity 1s, transform 1s';
+    // Set initial opacity and transition for fade-in effect
+    image.style.opacity = 0;
+    image.style.transition = 'top 1s, opacity 1s, transform 1s';
 
-  // Append image to container
-  imageContainer.appendChild(image);
+    // Append image to container
+    imageContainer.appendChild(image);
 
-  // Trigger drop, shrink, fade-in, and rotation change effect after a short delay
-  setTimeout(() => {
-    image.style.opacity = 1;
-    image.style.top = finalTopPosition;
-    image.style.left = finalLeftPosition;
-    image.style.transform = `rotate(${finalRotation}deg) scale(1)`;
-  }, animationInterval);
+    // Trigger drop, shrink, fade-in, and rotation change effect after a short delay
+    setTimeout(() => {
+      image.style.opacity = 1;
+      image.style.top = finalTopPosition;
+      image.style.left = finalLeftPosition;
+      image.style.transform = `rotate(${finalRotation}deg) scale(1)`;
+    }, animationInterval);
+  };
 };
 
 const removeImageById = (id) => {
