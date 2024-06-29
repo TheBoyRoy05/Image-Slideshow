@@ -2,6 +2,11 @@ const imageContainer = document.getElementById("image-container");
 const maxHeight = 600;
 const maxWidth = 500;
 const maxAngle = 20;
+const maxImages = 50;
+
+// Time intervals (milliseconds)
+const imageInterval = 1000;
+const animationInterval = 500;
 
 fetch("output.json")
   .then(response => response.json())
@@ -12,10 +17,10 @@ fetch("output.json")
     console.error('Error fetching JSON:', error);
   });
 
-const createImage = (path, index) => {
+const createImage = (path, id) => {
   const image = document.createElement("img");
   image.src = "Images/" + path;
-  image.id = "Image-" + index;
+  image.id = "Image-" + id;
 
   // Resize image
   if (image.height > maxHeight){
@@ -36,11 +41,11 @@ const createImage = (path, index) => {
   // Set random rotation
   const initialRotation = Math.floor(Math.random() * maxAngle) - maxAngle / 2;
   const finalRotation = Math.floor(Math.random() * maxAngle) - maxAngle / 2;
-  image.style.transform = `rotate(${initialRotation}deg) scale(2)`; // Still not sure if scale(2) is best, but basically doubles the size
+  image.style.transform = `rotate(${initialRotation}deg) scale(2)`; // Starts off with double the size
 
   // Set initial opacity and transition for fade-in effect
   image.style.opacity = 0;
-  image.style.transition = 'top 1s, opacity 1s, transform 1s'; // I think I added the time correctly for movement and change in size
+  image.style.transition = 'top 1s, opacity 1s, transform 1s';
 
   // Append image to container
   imageContainer.appendChild(image);
@@ -50,16 +55,24 @@ const createImage = (path, index) => {
     image.style.opacity = 1;
     image.style.top = finalPosition
     image.style.transform = `rotate(${finalRotation}deg) scale(1)`;
-  }, 500);
+  }, animationInterval);
 };
 
-const slideshow = (paths) => {
-  let timeElapsed = 0;
-  while (timeElapsed < 100) {
-    let index = timeElapsed % paths.length;
-    setTimeout(() => createImage(paths[index], index), timeElapsed * 1000);
-    timeElapsed++;
+const removeImageById = (id) => {
+  const imageToRemove = document.getElementById(id);
+  if (imageToRemove) {
+    imageContainer.removeChild(imageToRemove);
+  } else {
+    console.warn(`Image with id '${id}' not found in imageContainer.`);
   }
 };
 
-// Also as a reminder, for the final product: all comments should explain useful chunks of code, so we kinda need to clean up the repository
+const slideshow = (paths) => {
+  for (let timeElapsed = 0; timeElapsed < 100; timeElapsed++) {
+    let index = timeElapsed % paths.length;
+    setTimeout(() => createImage(paths[index], timeElapsed), timeElapsed * imageInterval);
+    if (timeElapsed > maxImages){
+      setTimeout(() => removeImageById(`Image-${timeElapsed - maxImages}`), timeElapsed * imageInterval + animationInterval);
+    }
+  }
+};
