@@ -1,9 +1,7 @@
 const imageContainer = document.getElementById("image-container");
 const maxHeight = 600;
 const maxWidth = 500;
-const maxAngle = 25;
-const maxImages = 4;
-const imageInterval = 1000;
+const maxAngle = 20;
 
 fetch("output.json")
   .then(response => response.json())
@@ -11,7 +9,7 @@ fetch("output.json")
     slideshow(data.paths);
   })
   .catch(error => {
-      console.error('Error fetching JSON:', error);
+    console.error('Error fetching JSON:', error);
   });
 
 const createImage = (path, index) => {
@@ -30,41 +28,36 @@ const createImage = (path, index) => {
   }
 
   // Set random position
+  const initialRotation = Math.floor(Math.random() * maxAngle) - maxAngle / 2; // These 2 lines are for the varied rotation
+  const finalRotation = Math.floor(Math.random() * maxAngle) - maxAngle / 2; // I used Math.Floor based off what you said Issac
   image.style.position = 'absolute';
-  image.style.top = Math.floor(Math.random() * (window.innerHeight - image.height)) + 'px';
+  image.style.top = '-500px'; // I set the image above the screen so it can 'drop off'
   image.style.left = Math.floor(Math.random() * (window.innerWidth - image.width)) + 'px';
-
+  
   // Set random rotation
-  const randomRotation = Math.floor(Math.random() * maxAngle) - maxAngle / 2;
-  image.style.transform = `rotate(${randomRotation}deg)`;
+  // const randomRotation = Math.floor(Math.random() * maxRotationAngle) - maxRotationAngle / 2; (Old Line, didn't use 1 rotation)
+
+  image.style.transform = `rotate(${initialRotation}deg) scale(2)`; // Still not sure if scale(2) is best, but basically doubles the size
 
   // Set initial opacity and transition for fade-in effect
   image.style.opacity = 0;
-  image.style.transition = 'opacity 1s';
+  image.style.transition = 'top 1s, opacity 1s, transform 1s'; // I think I added the time correctly for movement and change in size
 
   // Append image to container
   imageContainer.appendChild(image);
 
-  // Trigger fade-in effect after a short delay
+  // Trigger drop, shrink, fade-in, and rotation change effect after a short delay
   setTimeout(() => {
     image.style.opacity = 1;
-  }, index * 100); // Adjust timing to stagger the fade-in effect
-};
-
-const removeImageById = (id) => {
-  const imageToRemove = document.getElementById(id);
-  if (imageToRemove) {
-    imageContainer.removeChild(imageToRemove);
-  } else {
-    console.warn(`Image with id '${id}' not found in imageContainer.`);
-  }
+    image.style.top = Math.floor(Math.random() * (window.innerHeight - image.height)) + 'px'; // This just basically is how I made the initial size before it goes down
+    image.style.transform = `rotate(${finalRotation}deg) scale(1)`; // Shrink to actual size with final rotation
+  }, 50 + index * 1000); // Adjust timing to stagger the fade-in effect, also I made it 1 SEC instead of 0.1 SEC
 };
 
 const slideshow = (paths) => {
   for (let i = 0; i < paths.length; i++){
-    setTimeout(() => createImage(paths[i], i), i * imageInterval);
-    if (i > maxImages - 1){
-      setTimeout(() => removeImageById(`Image-${i - maxImages - 1}`), i * imageInterval);
-    }
+    setTimeout(() => createImage(paths[i], i), i * 1000);
   }
 };
+
+// Also as a reminder, for the final product: all comments should explain useful chunks of code, so we kinda need to clean up the repository
