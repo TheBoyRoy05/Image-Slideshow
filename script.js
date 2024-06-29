@@ -27,16 +27,15 @@ const createImage = (path, index) => {
     image.width = maxWidth;
   }
 
-  // Set random position
-  const initialRotation = Math.floor(Math.random() * maxAngle) - maxAngle / 2; // These 2 lines are for the varied rotation
-  const finalRotation = Math.floor(Math.random() * maxAngle) - maxAngle / 2; // I used Math.Floor based off what you said Issac
+  // Set intial and random final position
+  const finalPosition = Math.floor(Math.random() * (window.innerHeight - image.height)) + 'px';
   image.style.position = 'absolute';
-  image.style.top = '-500px'; // I set the image above the screen so it can 'drop off'
+  image.style.top = '-500px';
   image.style.left = Math.floor(Math.random() * (window.innerWidth - image.width)) + 'px';
   
   // Set random rotation
-  // const randomRotation = Math.floor(Math.random() * maxRotationAngle) - maxRotationAngle / 2; (Old Line, didn't use 1 rotation)
-
+  const initialRotation = Math.floor(Math.random() * maxAngle) - maxAngle / 2;
+  const finalRotation = Math.floor(Math.random() * maxAngle) - maxAngle / 2;
   image.style.transform = `rotate(${initialRotation}deg) scale(2)`; // Still not sure if scale(2) is best, but basically doubles the size
 
   // Set initial opacity and transition for fade-in effect
@@ -49,14 +48,17 @@ const createImage = (path, index) => {
   // Trigger drop, shrink, fade-in, and rotation change effect after a short delay
   setTimeout(() => {
     image.style.opacity = 1;
-    image.style.top = Math.floor(Math.random() * (window.innerHeight - image.height)) + 'px'; // This just basically is how I made the initial size before it goes down
-    image.style.transform = `rotate(${finalRotation}deg) scale(1)`; // Shrink to actual size with final rotation
-  }, 50 + index * 1000); // Adjust timing to stagger the fade-in effect, also I made it 1 SEC instead of 0.1 SEC
+    image.style.top = finalPosition
+    image.style.transform = `rotate(${finalRotation}deg) scale(1)`;
+  }, 500);
 };
 
 const slideshow = (paths) => {
-  for (let i = 0; i < paths.length; i++){
-    setTimeout(() => createImage(paths[i], i), i * 1000);
+  let timeElapsed = 0;
+  while (timeElapsed < 100) {
+    let index = timeElapsed % paths.length;
+    setTimeout(() => createImage(paths[index], index), timeElapsed * 1000);
+    timeElapsed++;
   }
 };
 
