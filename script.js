@@ -1,7 +1,9 @@
 const imageContainer = document.getElementById("image-container");
-const maxImageHeight = 600;
-const maxImageWidth = 500;
-const maxRotationAngle = 20;
+const maxHeight = 600;
+const maxWidth = 500;
+const maxAngle = 25;
+const maxImages = 4;
+const imageInterval = 1000;
 
 fetch("output.json")
   .then(response => response.json())
@@ -18,13 +20,13 @@ const createImage = (path, index) => {
   image.id = "Image-" + index;
 
   // Resize image
-  if (image.height > maxImageHeight){
-    image.width = image.width * maxImageHeight / image.height;
-    image.height = maxImageHeight;
+  if (image.height > maxHeight){
+    image.width = image.width * maxHeight / image.height;
+    image.height = maxHeight;
   }
-  if (image.width > maxImageWidth) {
-    image.height = image.height * maxImageWidth / image.width;
-    image.width = maxImageWidth;
+  if (image.width > maxWidth) {
+    image.height = image.height * maxWidth / image.width;
+    image.width = maxWidth;
   }
 
   // Set random position
@@ -33,7 +35,7 @@ const createImage = (path, index) => {
   image.style.left = Math.floor(Math.random() * (window.innerWidth - image.width)) + 'px';
 
   // Set random rotation
-  const randomRotation = Math.floor(Math.random() * maxRotationAngle) - maxRotationAngle / 2;
+  const randomRotation = Math.floor(Math.random() * maxAngle) - maxAngle / 2;
   image.style.transform = `rotate(${randomRotation}deg)`;
 
   // Set initial opacity and transition for fade-in effect
@@ -46,11 +48,23 @@ const createImage = (path, index) => {
   // Trigger fade-in effect after a short delay
   setTimeout(() => {
     image.style.opacity = 1;
-  }, 50 + index * 100); // Adjust timing to stagger the fade-in effect
+  }, index * 100); // Adjust timing to stagger the fade-in effect
+};
+
+const removeImageById = (id) => {
+  const imageToRemove = document.getElementById(id);
+  if (imageToRemove) {
+    imageContainer.removeChild(imageToRemove);
+  } else {
+    console.warn(`Image with id '${id}' not found in imageContainer.`);
+  }
 };
 
 const slideshow = (paths) => {
   for (let i = 0; i < paths.length; i++){
-    setTimeout(() => createImage(paths[i], i), i * 1000);
+    setTimeout(() => createImage(paths[i], i), i * imageInterval);
+    if (i > maxImages - 1){
+      setTimeout(() => removeImageById(`Image-${i - maxImages - 1}`), i * imageInterval);
+    }
   }
 };
