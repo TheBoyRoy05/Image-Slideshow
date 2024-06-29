@@ -1,6 +1,7 @@
 body {
     background-color: black;
 }
+
 img {
     --s: 5px; /* control the size */
     border: calc(2*var(--s)) solid white;

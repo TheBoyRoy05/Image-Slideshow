@@ -33,10 +33,11 @@ const createImage = (path, id) => {
   }
 
   // Set intial and random final position
-  const finalPosition = Math.floor(Math.random() * (window.innerHeight - image.height)) + 'px';
+  const finalTopPosition = Math.floor(Math.random() * (window.innerHeight - image.height)) + 'px';
+  const finalLeftPosition = Math.floor(Math.random() * (window.innerWidth - image.width)) + 'px';
   image.style.position = 'absolute';
   image.style.top = '-500px';
-  image.style.left = Math.floor(Math.random() * (window.innerWidth - image.width)) + 'px';
+  image.style.left = (window.innerWidth - image.width) / 2;
   
   // Set random rotation
   const initialRotation = Math.floor(Math.random() * maxAngle) - maxAngle / 2;
@@ -53,7 +54,8 @@ const createImage = (path, id) => {
   // Trigger drop, shrink, fade-in, and rotation change effect after a short delay
   setTimeout(() => {
     image.style.opacity = 1;
-    image.style.top = finalPosition
+    image.style.top = finalTopPosition;
+    image.style.left = finalLeftPosition;
     image.style.transform = `rotate(${finalRotation}deg) scale(1)`;
   }, animationInterval);
 };
@@ -71,6 +73,8 @@ const slideshow = (paths) => {
   for (let timeElapsed = 0; timeElapsed < 100; timeElapsed++) {
     let index = timeElapsed % paths.length;
     setTimeout(() => createImage(paths[index], timeElapsed), timeElapsed * imageInterval);
+
+    // Only allow a set amount of images on the screen to avoid clutter and lag
     if (timeElapsed > maxImages){
       setTimeout(() => removeImageById(`Image-${timeElapsed - maxImages}`), timeElapsed * imageInterval + animationInterval);
     }
